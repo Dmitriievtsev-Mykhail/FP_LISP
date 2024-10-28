@@ -61,6 +61,13 @@ CL-USER> (compress-list '(1 a a 3 3 3 b))
   (check-reverse "test 1.2" '()      '())
   (check-reverse "test 1.3" '(1 2 3) '(3 (2 (1))))
   (check-reverse "test 1.4" '(nil 2 3)  '(3 (2 (nil)))))
+
+  (defun check-reverse (name input expected)
+  "Execute `reverse-and-nest-tail' on `input', compare result with `expected' and print
+comparison status"
+  (format t "~:[FAILED~;passed~]... ~a~%"
+          (equal (reverse-and-nest-tail input) expected)
+          name))
 ```
 ### Тестування
 ```lisp
@@ -74,15 +81,15 @@ NIL
 ## Лістинг функції compress-list
 ```lisp
 
+(defun compress-list (lst)
+  (when lst
+    (let ((count (count-reps (car lst) (cdr lst) 1)))
+      (cons (list count (car lst)) (compress-list (nthcdr count lst))))))
+
 (defun count-reps (element lst count)
   (if (and lst (eql element (car lst)))
       (count-reps element (cdr lst) (+ count 1))
-      (cons (list count element) lst)))
-
-(defun compress-list (lst)
-  (when lst
-    (let ((res (count-reps (car lst) (cdr lst) 1)))
-      (cons (car res) (compress-list (cdr res))))))
+      count))
 ```
 ### Тестові набори
 ```lisp
@@ -91,6 +98,13 @@ NIL
   (check-compress "test 2.2" '(1 a a 1 1 a a) '((1 1) (2 A) (2 1) (2 A)))
   (check-compress "test 2.3" '() nil)
   (check-compress "test 2.4" '(1) '((1 1))))
+
+(defun check-compress (name input expected)
+  "Execute `compress-list' on `input', compare result with `expected' and print
+  comparison status."
+  (format t "~:[FAILED~;PASSED~]... ~a~%"
+          (equal (compress-list input) expected)
+          name))
 ```
 ### Тестування
 ```lisp

@@ -9,13 +9,13 @@
 ;Реалізація другої функції
 (defun compress-list (lst)
   (when lst
-    (let ((res (count-reps (car lst) (cdr lst) 1)))
-      (cons (car res) (compress-list (cdr res))))))
+    (let ((count (count-reps (car lst) (cdr lst) 1)))
+      (cons (list count (car lst)) (compress-list (nthcdr count lst))))))
 
 (defun count-reps (element lst count)
   (if (and lst (eql element (car lst)))
       (count-reps element (cdr lst) (+ count 1))
-      (cons (list count element) lst)))
+      count))
 
 
 ;Функції тестування
