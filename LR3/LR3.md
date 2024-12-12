@@ -42,45 +42,36 @@
 
 ## Лістинг функції з використанням конструктивного підходу
 ```lisp
-(defun left-to-right (A L R k)
-  "Рекурсивний прохід списку зліва направо, обмінюючи місцями елементи."
-  (if (>= L R)
-      (values k A)
-      (let* ((current (nth L A))
-             (next (nth (1+ L) A)))
-        (if (>= current next)
-            (left-to-right
-             (append (subseq A 0 L)
-                     (list next current)
-                     (nthcdr (+ 2 L) A))
-             (1+ L) R L)
-            (left-to-right A (1+ L) R k)))))
+(defun left-to-right (lst)
+  "Рекурсивний прохід зліва направо"
+  (if (null (cdr lst))
+      lst
+      (let ((current (car lst))
+            (next (cadr lst)))
+        (if (> current next)
+            (cons next (left-to-right (cons current (cddr lst))))
+            (cons current (left-to-right (cdr lst)))))))
 
-(defun right-to-left (A R L k)
-  "Рекурсивний прохід списку справа наліво, обмінюючи місцями елементи."
-  (if (<= R L)
-      (values k A)
-      (let* ((prev (nth (1- R) A))
-             (current (nth R A)))
-        (if (>= prev current)
-            (right-to-left
-             (append (subseq A 0 (1- R))
-                     (list current prev)
-                     (nthcdr (1+ R) A))
-             (1- R) L (1- R))
-            (right-to-left A (1- R) L k)))))
+(defun right-to-left (lst)
+  "Рекурсивний прохід справа наліво"
+  (if (null (cdr lst))
+      lst
+      (let ((prev (car lst))
+            (next (cadr lst)))
+        (if (> prev next)
+            (cons next (right-to-left (cons prev (cddr lst))))
+            (cons prev (right-to-left (cdr lst)))))))
 
-(defun exchange4-rec (A L R)
+(defun exchange4-rec (lst L R)
   "Рекурсивний алгоритм сортування"
   (if (>= L R)
-      A
-      (multiple-value-bind (k new-A) (left-to-right A L R L)
-        (multiple-value-bind (new-k new-A) (right-to-left new-A k L k)
-          (exchange4-rec new-A (1+ new-k) k)))))
+      lst
+      (let ((new-lst (left-to-right lst)))
+        (exchange4-rec (right-to-left new-lst) (1+ L) (1- R)))))
 
-(defun exchange4-constructive (A)
+(defun exchange4-constructive (lst)
   "Функція шейкерного сортування масива A за незменшенням з використанням конструктивного методу"
-  (exchange4-rec  A 0 (1- (length A))))
+  (exchange4-rec lst 0 (1- (length lst))))
 
 ```
 ### Тестові набори та утиліти
@@ -93,7 +84,7 @@
           name))
 
 (defun test-exchange4-constructive ()
-  (check-constructive "test 1.1" '(1 2 3 4 5) '(1 2 3 4 5) )
+  (check-constructive "test 1.1" '(1 2 3 4 5) '(1 2 3 4 5))
   (check-constructive "test 1.2" '(5 4 3 2 1) '(1 2 3 4 5))
   (check-constructive "test 1.3" '(5 5 4 4 3) '(3 4 4 5 5))
   (check-constructive "test 1.4" '(-6 3 2 5 1 4 3 ) '(1 2 3 3 4 5 -6)))
