@@ -12,24 +12,23 @@
   "Рекурсивний прохід справа наліво"
   (if (null (cdr lst))
       lst
-      (let ((prev (car lst))
-            (next (cadr lst)))
-        (if (> prev next)
-            (cons next (right-to-left (cons prev (cddr lst))))
-            (cons prev (right-to-left (cdr lst)))))))
+      (let* ((rest (right-to-left (cdr lst)))
+             (current (car lst))
+             (next (car rest)))
+          (if (> current next)
+              (cons next (cons current (cdr rest)))
+              (cons current rest)))))
 
 (defun exchange4-rec (lst L R)
-  "Рекурсивний алгоритм сортування"
+  "Рекурсивний алгоритм сортування з прохідними межами L і R."
   (if (>= L R)
       lst
       (let ((new-lst (left-to-right lst)))
         (exchange4-rec (right-to-left new-lst) (1+ L) (1- R)))))
 
 (defun exchange4-constructive (lst)
-  "Функція шейкерного сортування масива A за незменшенням з використанням конструктивного методу"
+  "Функція шейкерного сортування масиву lst за незменшенням."
   (exchange4-rec lst 0 (1- (length lst))))
-
-
 
 
 (defun check-constructive (name input expected)
@@ -44,7 +43,6 @@
   (check-constructive "test 1.2" '(5 4 3 2 1) '(1 2 3 4 5))
   (check-constructive "test 1.3" '(5 5 4 4 3) '(3 4 4 5 5))
   (check-constructive "test 1.4" '(-6 3 2 5 1 4 3 ) '(-6 1 2 3 3 4 5 )))
-
 
 
 ;Імперативний Метод
